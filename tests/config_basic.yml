@@ -1,0 +1,21 @@
+config:
+  some_dict:
+    key: value
+    other: out
+  some_float: 1.11
+  some_int: 12345
+  some_list_numbers:
+  - 1
+  - 2
+  - 3
+  some_list_strings:
+  - wow
+  - it's a
+  - list
+  test_inherit: inherited
+  test_override: global
+encryption:
+  key: LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJDZ0tDQVFFQW5oU2lOL2F4N2hCTlFMQU9JUXdQN0hadWlsaFk3Ym1MQVQ2VUs1elpzMFZzblkxR2d3R1MKdnBuRXNjaXpYVUJaMlhaa3BHbXBOekVyTWpvbElYVHhOR3VnSFdUdVorOS9QRzRxaWFrdHBtS0lzWVlHSUNOcQpkbCtYZ3BmZ0NTS3JMMUdIaWJoUUVYaFgzUm81Ry9aTDZ0Tm4vYWdmbm8zaUZub2hQTmpkY29yeEk4ZXZTeUkwClUrMTJSUUdBTWg5TTdtMFM1RDdHZ3FqVlZPSnFPUnJOZXpqNXJLRy9Xdko3M21QOUw3Y1BhVnYyTzBmNzBmV2oKV29nQUM1NUJ5aFJYOXVHaVBETE1CSHVFSVVDRTlXMWtRS1VkTDJGaWV0aEh5OTd6cmJvbVJsWmRpMVo3MWRvMApFcDVsU242cWZMRFEwT3VhWTVWTVBDV0VQMjhIS3pnRnV3SURBUUFCCi0tLS0tRU5EIFJTQSBQVUJMSUMgS0VZLS0tLS0K
+env:
+  prod:
+    test_override: prod

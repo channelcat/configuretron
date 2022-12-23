@@ -1,0 +1,10 @@
+FROM python:3.11-alpine
+
+ADD requirements_dev.txt /requirements.txt
+RUN pip install -r /requirements.txt
+
+ADD . /code
+WORKDIR /code
+RUN python setup.py install
+
+cmd ["tox", "run", "py311"]

@@ -1,0 +1,23 @@
+services:
+  tox:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    volumes:
+      - .:/code
+    command: tox run -e py311
+  pytest:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    volumes:
+      - .:/code
+    command: pytest
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    volumes:
+      - .:/code
+    entrypoint: python -m configuretron
+    command: --help
