@@ -31,7 +31,7 @@ def from_dict(config_class: T, config_dict: dict, private_key: bytes = None, env
 
 def yaml_to_dict(file: str):
     if not path.exists(file):
-        raise FileExistsError(f"Cannot read configuration file: {e}")
+        raise FileExistsError(f"Config file not found")
 
     # Load configuration
     try:

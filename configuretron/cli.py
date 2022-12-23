@@ -127,6 +127,7 @@ def setup_encryption(ctx, bits):
 @click.argument("values", nargs=-1)
 @click.pass_context
 def encrypt(ctx, key=None, values=None):
+    env = ctx.obj["env"]
     config_dict = ctx.obj["config"]
     config_args = config_dict["config"]
     yaml_path = ctx.obj["yaml_path"]
@@ -143,23 +144,32 @@ def encrypt(ctx, key=None, values=None):
         click.echo("Unable to process public key from config")
 
     if key:
+        arg_source = config_args
+        arg_source_name = "Config"
+        if env:
+            if "env" not in config_dict or env not in config_dict["env"]:
+                click.echo(f"Env {env} not found in config")
+                exit()
+            arg_source = config_dict["env"][env]
+            arg_source_name = f"Env {env}"
+
         if len(values) > 1:
             value = values
         elif values:
             value = values[0]
         else:
-            if not key in config_args:
-                click.echo(f"Config is missing key {key}")
+            if not key in arg_source:
+                click.echo(f"{arg_source_name} is missing key {key}")
                 exit()
-            value = config_args[key]
+            value = arg_source[key]
 
         click.echo(f"Encrypting {key} as {value}...", nl=False)
-        config_args[f"{key}.encrypted"] = configuretron.encrypt(value, public_key)
+        arg_source[f"{key}.encrypted"] = configuretron.encrypt(value, public_key)
         click.echo(f"success")
 
         # Clear old key
-        if key in config_args:
-            del config_args[key]
+        if key in arg_source:
+            del arg_source[key]
 
         # Write to YAML
         write_yaml(config_dict, yaml_path)
