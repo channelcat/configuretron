@@ -22,9 +22,14 @@ Configure-Tron
 
 Configuretron enables type hinted configuration files and secrets for python.  Easily add secrets to your configuration that are encryptable from clients and decryptable from trusted developers and running services.
 
-
-* Free software: MIT license
-* Documentation: https://configuretron.readthedocs.io.
+Features
+------------
+ * Type-hinted configuration
+ * Simple, readable YAML configs
+ * Config in source control
+ * Secrets safely in source control
+ * Easily swap environments
+ * Control who can encrypt and decrypt
 
 Installation
 ------------
