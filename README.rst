@@ -75,7 +75,7 @@ Encrypt and variables in the config (in this example, api_token):
 
 .. code-block:: console
 
-    $ python -m configuretron --yaml=config.yml encrypt --var api_token
+    $ python -m configuretron --yaml=config.yml encrypt --key api_token
 
 Then pass the key to the config
 
@@ -96,7 +96,8 @@ To override values per-environment, add them into the config like so:
         api_timeout: 20
     env:
         prod:
-            api_url: https://apitopia.com/api/v1
+            config:
+                api_url: https://apitopia.com/api/v1
 
 Then just pass `env` when initializing the configuration:
 
@@ -109,3 +110,4 @@ TODO Features
 -------------
 * Config heirarchy
 * Type validation
+* Multiple layered configs

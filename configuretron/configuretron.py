@@ -105,9 +105,11 @@ def overlay_config_env(config_dict: dict, config_args: dict, env: str):
         if not env in config_dict["env"]:
             raise KeyError(f"Config is missing {env} in env section")
 
-        overlayed_config = config_dict["env"][env]
-        for key in overlayed_config.keys():
-            config_args[key] = overlayed_config[key]
+        overlayed_env = config_dict["env"][env]
+        if "config" in overlayed_env:
+            overlayed_config = overlayed_env["config"]
+            for key in overlayed_config.keys():
+                config_args[key] = overlayed_config[key]
 
 
 ################### Value Encryption/Decryption ###################

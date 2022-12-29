@@ -150,7 +150,10 @@ def encrypt(ctx, key=None, values=None):
             if "env" not in config_dict or env not in config_dict["env"]:
                 click.echo(f"Env {env} not found in config")
                 exit()
-            arg_source = config_dict["env"][env]
+            if "config" not in config_dict["env"][env]:
+                click.echo(f"config not found in env {env}")
+                exit()
+            arg_source = config_dict["env"][env]["config"]
             arg_source_name = f"Env {env}"
 
         if len(values) > 1:

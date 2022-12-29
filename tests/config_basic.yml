@@ -16,4 +16,5 @@ config:
   test_override: global
 env:
   prod:
-    test_override: prod
+    config:
+      test_override: prod
