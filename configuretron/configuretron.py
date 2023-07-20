@@ -8,14 +8,37 @@ import yaml
 T = TypeVar("T")
 
 
-def from_yaml(config_class: T, file: str, env: str = None, private_key: bytes = None) -> T:
+def from_yaml(
+    config_class: T,
+    file: str,
+    env: str = None,
+    private_key: bytes = None,
+    decrypt: bool = True,
+) -> T:
     config_dict = yaml_to_dict(file)
 
-    return from_dict(config_class=config_class, config_dict=config_dict, env=env, private_key=private_key)
+    return from_dict(
+        config_class=config_class,
+        config_dict=config_dict,
+        env=env,
+        private_key=private_key,
+        decrypt=decrypt,
+    )
 
 
-def from_dict(config_class: T, config_dict: dict, private_key: bytes = None, env: str = None) -> T:
-    config_args = dict_to_args(config_dict=config_dict, env=env, private_key=private_key)
+def from_dict(
+    config_class: T,
+    config_dict: dict,
+    env: str = None,
+    private_key: bytes = None,
+    decrypt: bool = True,
+) -> T:
+    config_args = dict_to_args(
+        config_dict=config_dict,
+        env=env,
+        private_key=private_key,
+        decrypt=decrypt,
+    )
 
     # Load data into dataclass
     try:
@@ -49,7 +72,12 @@ def yaml_to_dict(file: str):
     return config_dict
 
 
-def dict_to_args(config_dict: dict, private_key: bytes = None, env: str = None):
+def dict_to_args(
+    config_dict: dict,
+    env: str = None,
+    private_key: bytes = None,
+    decrypt: bool = True,
+):
     if not "config" in config_dict:
         raise KeyError("Config is missing config section")
 
@@ -61,15 +89,23 @@ def dict_to_args(config_dict: dict, private_key: bytes = None, env: str = None):
         overlay_config_env(config_dict, config_args, env)
 
     # Decrypt Secrets
-    if config_has_secrets(config_args):
-        if not private_key:
-            raise KeyError("Config has encrypted secrets, but no private key was provided")
-        try:
-            rsa_private_key = rsa.PrivateKey.load_pkcs1(private_key)
-        except Exception as e:
-            raise KeyError(f"Private key provided was invalid: {e}")
+    if decrypt:
+        if config_has_secrets(config_args):
+            if not private_key:
+                raise KeyError(
+                    "Config has encrypted secrets, but no private key was provided"
+                )
+            try:
+                rsa_private_key = rsa.PrivateKey.load_pkcs1(private_key)
+            except Exception as e:
+                raise KeyError(f"Private key provided was invalid: {e}")
 
-        decrypt_config_keys(config_args, rsa_private_key)
+            decrypt_config_keys(config_args, rsa_private_key)
+    else:
+        for key in list(config_args.keys()):
+            if key.endswith(".encrypted"):
+                config_args[key[:-10]] = None
+                del config_args[key]
 
     return config_args
 

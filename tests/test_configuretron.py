@@ -57,9 +57,19 @@ def test_environment_override():
 
 
 def test_encryption():
-    config = configuretron.from_yaml(EncryptedConfig, ENCRYPTED_CONFIG_YAML, private_key=private_key)
+    config = configuretron.from_yaml(
+        EncryptedConfig, ENCRYPTED_CONFIG_YAML, private_key=private_key
+    )
     assert config.secret == "secret"
     assert config.secret_list == [1, 2, 3]
+
+
+def test_encryption_disable():
+    config = configuretron.from_yaml(
+        EncryptedConfig, ENCRYPTED_CONFIG_YAML, decrypt=False
+    )
+    assert config.secret == None
+    assert config.secret_list == None
 
 
 def test_command_line_interface():
