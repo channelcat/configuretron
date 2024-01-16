@@ -172,7 +172,10 @@ def encrypt(value: Any, public_key: rsa.PublicKey):
 
 
 def decrypt(value: str, private_key: rsa.PrivateKey):
-    value_parts = value.split(ENCRYPTION_DELIMETER)
+    # TODO: make this always string or bytes
+    value_parts = value.split(
+        ENCRYPTION_DELIMETER.decode() if type(value) is str else ENCRYPTION_DELIMETER
+    )
     decrypted_values = []
     for value_part in value_parts:
         # Base64 decode
