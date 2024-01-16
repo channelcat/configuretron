@@ -6,6 +6,8 @@ from typing import Any, TypeVar
 import yaml
 
 T = TypeVar("T")
+ENCRYPTION_DELIMETER = b"|"
+ENCRYPTION_MAX_LENGTH = 245
 
 
 def from_yaml(
@@ -152,29 +154,49 @@ def overlay_config_env(config_dict: dict, config_args: dict, env: str):
 
 
 def encrypt(value: Any, public_key: rsa.PublicKey):
-    return b64encode(rsa.encrypt(json.dumps(value).encode(), public_key)).decode()
+    json_value = json.dumps(value).encode()
+
+    encrypted_parts = []
+    while json_value:
+        encrypted_part = b64encode(
+            rsa.encrypt(json_value[:ENCRYPTION_MAX_LENGTH], public_key)
+        )
+        encrypted_parts.append(encrypted_part)
+        json_value = json_value[ENCRYPTION_MAX_LENGTH:]
+
+    return (
+        ENCRYPTION_DELIMETER.join(encrypted_parts)
+        if len(encrypted_part) > 1
+        else encrypted_part[0]
+    )
 
 
 def decrypt(value: str, private_key: rsa.PrivateKey):
-    # Base64 decode
-    try:
-        decoded_value = b64decode(value)
-    except Exception as e:
-        raise ValueError(f"Could not decode base64 encrypted: {e}")
+    value_parts = value.split(ENCRYPTION_DELIMETER)
+    decrypted_values = []
+    for value_part in value_parts:
+        # Base64 decode
+        try:
+            decoded_value = b64decode(value_part)
+        except Exception as e:
+            raise ValueError(f"Could not decode base64 encrypted: {e}")
 
-    # RSA Decrypt
-    try:
-        decrypted_value = rsa.decrypt(decoded_value, private_key).decode()
-    except Exception as e:
-        raise ValueError(f"Could not decrypt with provided key: {e}")
+        # RSA Decrypt
+        try:
+            decrypted_values.append(rsa.decrypt(decoded_value, private_key).decode())
+        except Exception as e:
+            raise ValueError(f"Could not decrypt with provided key: {e}")
+
+    # Combine encrypted parts
+    decrypted_value = (
+        "".join(decrypted_values) if len(decrypted_values) > 1 else decrypted_values[0]
+    )
 
     # JSON Load
     try:
-        result = json.loads(decrypted_value)
+        return json.loads(decrypted_value)
     except Exception as e:
         raise ValueError(f"Could not load JSON data: {e}")
-
-    return result
 
 
 ################### Helpers ###################
